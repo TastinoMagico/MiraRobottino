@@ -20,10 +20,18 @@
 			</div>
 
 		</div>
-
+        
+        <div id="canvas">
+            <div id="crosshair">
+                <img src="gap4px.png">
+            </div>
+        </div>
+        
 		<script>
 			var camera, scene, renderer;
 			var geometry, material, mesh;
+            var gametime = 0;
+            var score;
 			var controls;
             var targetList = [];
             var projector, mouse = { x: 0, y: 0 };
@@ -32,6 +40,7 @@
 			var blocker = document.getElementById( 'blocker' );
 			var instructions = document.getElementById( 'instructions' );
 			var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
+
 			if ( havePointerLock ) {
 				var element = document.body;
 				var pointerlockchange = function ( event ) {
@@ -81,21 +90,15 @@
 				instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
 			}
                 
-                function numgen(min, max){
-                    return min + (max - min) * Math.random();
-                  }
-
+            function numgen(min, max){
+            return min + (max - min) * Math.random();
+            }
 
 			init();
 			animate();
 			var controlsEnabled = false;
-			var moveForward = false;
-			var moveBackward = false;
-			var moveLeft = false;
-			var moveRight = false;
-			var canJump = false;
 			var prevTime = performance.now();
-			var velocity = new THREE.Vector3();
+
 			function init() {
                 //scene / lights
 				camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 1, 1000 );
@@ -120,12 +123,12 @@
                     mesh.position.z = -80;
           
 					scene.add( mesh );
-					material.color.setHSL( Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
+					material.color.set(0xff5757);
 					objects.push( mesh );
 				}
                 
-                //hit detect
-                //repos cubo
+
+
                 //gui
                 
 				//render cfg
@@ -133,14 +136,16 @@
 				renderer.setClearColor( 0xffffff );
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
-				document.body.appendChild( renderer.domElement );
+                document.getElementById("canvas").appendChild(renderer.domElement);
+                //document.body.appendChild( renderer.domElement );
 				//const pickHelper = new PickHelper();
                 //pickHelper.pick({x: 0, y: 0}, scene, camera, time);
 				window.addEventListener( 'resize', onWindowResize, false );
                 window.addEventListener('mousedown', mdown, false);     
     
 			    }
-            function mdown( event ) { 
+
+                function mdown( event ) { 
 
                 this.raycaster = new THREE.Raycaster();
                 this.pickedObject = null;
@@ -152,10 +157,14 @@
                 this.pickedObject = intersectedObjects[0].object;
                 this.pickedObject.position.y = numgen(-50, 50);
                 this.pickedObject.position.x = numgen(-50, 50);
+                
+                var hitsound = new Audio('hitsound.ogg');
+                hitsound.play();
+
                 console.log("o(≧∇≦)o");
-                    
                 }
             }
+            
             
 			function onWindowResize() {
 				camera.aspect = window.innerWidth / window.innerHeight;
@@ -167,10 +176,25 @@
 				requestAnimationFrame( animate );
 				if ( controlsEnabled ) {
 
+                    if (gametime > 10) {
+                        gametime = 0;  
+                            if (document.exitFullscreen) {
+                                document.exitFullscreen();
+                            } else if (document.webkitExitFullscreen) {
+                                document.webkitExitFullscreen();
+                            } else if (document.mozCancelFullScreen) {
+                                document.mozCancelFullScreen();
+                            } else if (document.msExitFullscreen) {
+                                document.msExitFullscreen();
+                            }
+                        console.log("exit"); 
+                        //show score screen
+                    }
+
 					var time = performance.now();
 					var delta = ( time - prevTime ) / 1000;
 					prevTime = time;
-
+                    //gametime += 0.1;
    
 				}
 
