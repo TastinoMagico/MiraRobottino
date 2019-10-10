@@ -1,6 +1,9 @@
             var camera, scene, renderer;
 			var geometry, material, mesh;
+            var gametime;
 			var controls;
+            var objects = [];
+            var score = 0;
                 
 			init();
 			animate();
@@ -18,28 +21,114 @@
 				scene.add( controls.getObject() );
 
 				renderer = new THREE.WebGLRenderer();
+                
 				renderer.setClearColor( 0xffffff );
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
                 document.getElementById("canvas").appendChild(renderer.domElement);
 				window.addEventListener( 'resize', onWindowResize, false );  
-    
+                window.addEventListener('mousedown', mdown, false);
+
+                targetgen(3);
+
 			    }
+
+        
+
+            function mdown( event ) { 
+                this.raycaster = new THREE.Raycaster();
+                this.pickedObject = null;
+                this.raycaster.setFromCamera({x: 0, y: 0}, camera);
+                // get the list of objects the ray intersected
+                const intersectedObjects = this.raycaster.intersectObjects(scene.children);
+                if (intersectedObjects.length) {
+                // pick the first object. It's the closest one
+                this.pickedObject = intersectedObjects[0].object;
+                this.pickedObject.position.y = numgen(-50, 50);
+                repos(this.pickedObject);
+                this.pickedObject.position.x = numgen(-50, 50);
+                
+                var hitsound = new Audio('hitsound.ogg');
+                hitsound.play();      
+                scoreupdate();
+                
+                
+                console.log("o(≧∇≦)o");
+                
+                }
+            }
+
+            function scoreupdate() 
+            { 
+                score += 1;
+            }
+            function getscore()
+            {
+                return score;
+            }
+            function scoreset()
+            {
+                score = 0;
+            }
+            
+            function repos(obj){
+                obj.position.y = numgen(-50, 50);
+                obj.position.x = numgen(-50, 50);
+            }
+
+
+            function targetgen(n){
+                    geometry = new THREE.BoxGeometry( 20,20, 20);
+        				for ( var i = 0; i < n; i ++ ) {
+
+					material = new THREE.MeshPhongMaterial( { specular: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
+					var mesh = new THREE.Mesh( geometry, material );
+					
+                    repos(mesh);
+					
+                    mesh.position.z = -80;
+          
+					scene.add( mesh );
+					material.color.set(0xff5757);
+					objects.push( mesh );
+				}
+            }
+            
+         
+                
+            function numgen(min, max){
+            return min + (max - min) * Math.random();
+            }
             
 			function onWindowResize() {
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 				renderer.setSize( window.innerWidth, window.innerHeight );
 			}
+
             
 			function animate() {
 				requestAnimationFrame( animate );
-				if ( controlsEnabled ) {
-                    
-					var time = performance.now();
-					var delta = ( time - prevTime ) / 1000;
+                if ( controlsEnabled ) {
+                        if (gametime > 30)
+                            {
+                                console.log("score screen");
+                                document.exitPointerLock = document.exitPointerLock    ||
+                                document.mozExitPointerLock;
+                                document.exitPointerLock();
+                                document.getElementById("instructions").innerHTML ="<span style='font-size:40px''>" + getscore() +"</span><br /><br />premi F5<br/>perchè ancora non so programmare";
+                                controls.enabled = false;
+                                blocker.style.display = '-webkit-box';
+                                blocker.style.display = '-moz-box';
+                                blocker.style.display = 'box';
+                                instructions.style.display = '';
+                                
+                            }
+                    document.getElementById("timer").innerHTML = Math.round((gametime/1000)*1000);
+            	    var time = performance.now();
 					prevTime = time;
-   
+                    gametime = (time/1000);
 				}
+
 				renderer.render( scene, camera );
 			}
