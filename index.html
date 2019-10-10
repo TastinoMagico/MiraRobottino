@@ -39,6 +39,8 @@
 			var raycaster;
 			var blocker = document.getElementById( 'blocker' );
 			var instructions = document.getElementById( 'instructions' );
+
+            //pointerlock
 			var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
 
 			if ( havePointerLock ) {
@@ -90,6 +92,7 @@
 				instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
 			}
                 
+            //rng number generation
             function numgen(min, max){
             return min + (max - min) * Math.random();
             }
@@ -99,8 +102,8 @@
 			var controlsEnabled = false;
 			var prevTime = performance.now();
 
+            //scene setup
 			function init() {
-                //scene / lights
 				camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 1, 1000 );
                 
 				scene = new THREE.Scene();
@@ -110,7 +113,7 @@
 				controls = new THREE.PointerLockControls( camera );
 				scene.add( controls.getObject() );
                 
-				// generazione oggetti
+				// target gen and reposition
 				geometry = new THREE.BoxGeometry( 20,20, 20);
         				for ( var i = 0; i < 3; i ++ ) {
 
@@ -127,11 +130,7 @@
 					objects.push( mesh );
 				}
                 
-
-
-                //gui
-                
-				//render cfg
+				//render configuration
 				renderer = new THREE.WebGLRenderer();
 				renderer.setClearColor( 0xffffff );
 				renderer.setPixelRatio( window.devicePixelRatio );
@@ -145,6 +144,8 @@
     
 			    }
 
+
+                //hitreg check on mousedown
                 function mdown( event ) { 
 
                 this.raycaster = new THREE.Raycaster();
@@ -175,26 +176,10 @@
 			function animate() {
 				requestAnimationFrame( animate );
 				if ( controlsEnabled ) {
-
-                    if (gametime > 10) {
-                        gametime = 0;  
-                            if (document.exitFullscreen) {
-                                document.exitFullscreen();
-                            } else if (document.webkitExitFullscreen) {
-                                document.webkitExitFullscreen();
-                            } else if (document.mozCancelFullScreen) {
-                                document.mozCancelFullScreen();
-                            } else if (document.msExitFullscreen) {
-                                document.msExitFullscreen();
-                            }
-                        console.log("exit"); 
-                        //show score screen
-                    }
-
+                    
 					var time = performance.now();
 					var delta = ( time - prevTime ) / 1000;
 					prevTime = time;
-                    //gametime += 0.1;
    
 				}
 
