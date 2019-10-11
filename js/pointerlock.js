@@ -31,6 +31,10 @@
 				document.addEventListener( 'mozpointerlockerror', pointerlockerror, false );
 				document.addEventListener( 'webkitpointerlockerror', pointerlockerror, false );
 				instructions.addEventListener( 'click', function ( event ) {
+
+                    
+                    starttimer();
+                    var sec = window.setInterval(countdown(), 1000);
                     
 					instructions.style.display = 'none';
 					// Ask the browser to lock the pointer

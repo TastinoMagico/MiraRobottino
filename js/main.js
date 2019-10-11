@@ -107,27 +107,44 @@
 			}
 
             
+                var gametimer = window.setInterval(countdown, 1000);
+            function starttimer(){
+                timer = 15;
+                console.log("timerstarted");
+            }
+            function settimer(){
+                window.clearInterval(gametimer);
+                timer = 0;
+            }
+            function gettimer(){
+                return timer;
+            }
+            function countdown(){
+                timer -= 1;
+            }
+     
+            
 			function animate() {
 				requestAnimationFrame( animate );
                 if ( controlsEnabled ) {
-                        if (gametime > 30)
+                    
+                        if (gettimer() == 0)
                             {
                                 console.log("score screen");
                                 document.exitPointerLock = document.exitPointerLock    ||
                                 document.mozExitPointerLock;
                                 document.exitPointerLock();
-                                document.getElementById("instructions").innerHTML ="<span style='font-size:40px''>" + getscore() +"</span><br /><br />premi F5<br/>perchè ancora non so programmare";
+                                document.getElementById("instructions").innerHTML ="<span style='font-size:40px''>" + getscore() +"</span><br /><br />premi F5";
                                 controls.enabled = false;
                                 blocker.style.display = '-webkit-box';
                                 blocker.style.display = '-moz-box';
                                 blocker.style.display = 'box';
                                 instructions.style.display = '';
+                                settimer();
                                 
                             }
-                    document.getElementById("timer").innerHTML = Math.round((gametime/1000)*1000);
-            	    var time = performance.now();
-					prevTime = time;
-                    gametime = (time/1000);
+                document.getElementById("timer").innerHTML = gettimer();
+
 				}
 
 				renderer.render( scene, camera );
